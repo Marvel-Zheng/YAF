@@ -1,0 +1,172 @@
+<?php include APP_PATH."application/views/head.html" ?>
+
+<style type="text/css">
+.right{float: right;line-height: 42px;margin-left: 1em;font-size: 12px}
+.layui-colla-item{overflow: hidden;}
+</style>
+<ol class="breadcrumb" style="line-height: 38px">
+	<li><a href="index">主页</a></li>
+	<li class="active">文章列表</li>
+	<li"><a href="/article/add"><button  class="layui-btn" style="float:right;">添加文章</button></a></li>
+	<div style="clear:both;"></div>
+</ol>
+<div class="container">
+	<div class="list-group">
+		<?php
+			$key = 0;
+			foreach($lists as $list){
+			$key += 1;
+				echo'
+					<form class="layui-form" action="/article/add">
+						<div class="layui-collapse" lay-accordion="test">
+							<div class="layui-colla-item">
+								<h2 class="layui-colla-title">
+									<span class="left">'.$list['title'].'</span>
+									<span class="right">
+										<span style="margin-right: 1em;">作者 : '.$list['author'].'</span>
+										<span>更新时间:'.$list['update_time'].'</span>
+									</span>
+								</h2>
+								<div class="layui-colla-content">
+									<form class="layui-form" action="/article/add">
+										<div class="layui-form-item layui-form-text">
+											<div class="layui-form-item">
+												<input name="title" lay-verify="title" autocomplete="off" placeholder="请输入标题" class="layui-input" type="text" value="'.$list['title'].'">
+												<input type="hidden" class="layui-input" name="article_id" value="'.$list['id'].'">
+											</div>
+											<div class="layui-form-item">
+												<textarea class="layui-textarea layui-hide" lay-verify="content" id="LAY_editor'.$list['id'].'">'.$list['content'].'</textarea>
+											</div>
+										</div>
+										<div class="layui-form-item">
+									'; ?>
+									<?php 
+									if($list['self']){
+										echo '
+											<button class="layui-btn" onclick="return save($(this));" data-id="'.$key.'">立即提交</button>
+											<button type="reset" class="layui-btn layui-btn-danger right" onclick="return del($(this));">删 除</button>';
+									}else{
+										echo'
+											  <button class="layui-btn layui-btn-disabled" disabled=true>立即提交</button>
+											  <button class="layui-btn layui-btn-disabled right" disabled=true>删 除</button>';
+									}
+								?>
+								<?php
+									echo'
+										</div>
+									</form>								
+								</div>
+							</div>
+						</div>
+					</form>
+				';
+			}
+		?>
+	</div>
+</div>
+
+<!-- 分页实现 -->
+<div class="center">
+	<ul class="nav nav-justified pagination pagination-lg">
+		<?php
+			if($curPage&&$curSize&&$maxNum){
+				$pageAmount = intval($maxNum/$curSize);
+				if ($maxNum%$curSize)
+				$pageAmount++;
+
+				if($curPage>1){
+					echo '<li><a href="/article/index/?page='.($curPage-1).'&size='.($curSize).'">&laquo;</a></li>';
+				}
+
+				for($i=1; $i<=$pageAmount; $i++){
+					if($curPage==$i)
+					echo '<li><a class="selected" href="/article/index/?page='.$i.'&size='.($curSize).'">'.$i.'</a></li>';
+					else
+					echo '<li><a href="/article/index/?page='.$i.'&size='.($curSize).'">'.$i.'</a></li>';
+				}
+
+				if($curPage<$pageAmount){
+					echo '<li><a href="/article/index/?page='.($curPage+1).'&size='.($curSize).'">&raquo;</a></li>';
+				}
+			}
+		?>
+	</ul>
+</div>
+<?php include APP_PATH."application/views/foot.html" ?>
+
+<script type="text/javascript">
+	layui.use(['form', 'layedit', 'laydate','layer','element'], function(){
+	  var form = layui.form()
+	  ,layer = layui.layer
+	  ,layedit = layui.layedit
+	  ,laydate = layui.laydate;
+	var element = layui.element();
+	var layer = layui.layer;
+
+	//监听折叠
+	element.on('collapse(test)', function(data){
+		layer.msg('展开状态：'+ data.show);
+	});
+	  //自定义验证规则
+	  form.verify({
+	    title: function(value){
+	      if(value.length < 1){
+	        return '请输入文章标题';
+	      }
+	    }
+	    ,pass: [/(.+){6,12}$/, '密码必须6到12位']
+	    ,content: function(value){
+	      layedit.sync(editIndex);
+	    }
+	  });
+	  
+	  //监听指定开关
+	  form.on('switch(switchTest)', function(data){
+	    layer.msg('开关checked：'+ (this.checked ? 'true' : 'false'), {
+	      offset: '6px'
+	    });
+	    layer.tips('温馨提示：请注意开关状态的文字可以随意定义，而不仅仅是ON|OFF', data.othis)
+	  });
+	  	$(".layui-textarea").each(function(index,ele){
+			//创建一个编辑器
+			index = layedit.build(ele.id,{
+				uploadImage :  {url: '/upload/uploadImg', type: 'post'}
+			});
+		})
+	});
+	function save(ele){
+		//表单内容
+		var article_id = ele.parents('form').find("[name='article_id']").val();
+		var title = ele.parents('form').find("[name='title']").val();
+		var index = ele.attr('data-id');
+		layui.use(['layedit'], function(){
+			layedit = layui.layedit;
+			content = layedit.getContent(index);
+		})
+		$.ajax({
+			url : "/article/add",
+			type : 'post',
+			data : {content:content,article_id:article_id,title:title},
+			dataType : "JSON",
+			success : function(data){
+				layer.msg(data.msg);
+			}
+		})
+		return false;
+	}
+	function del(ele){
+		var article_id = ele.parents('form').find("[name='article_id']").val();
+		$.ajax({
+			url : "/article/delete",
+			type : 'post',
+			data : {article_id:article_id},
+			dataType : "JSON",
+			success : function(data){
+				layer.msg(data.msg);
+			}
+		})
+		setTimeout(function() {
+			location.reload();
+		}, 1000);
+	}
+</script>

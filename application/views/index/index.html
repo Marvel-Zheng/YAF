@@ -1,0 +1,52 @@
+<?php include APP_PATH."application/views/head.html" ?>
+
+<ol class="breadcrumb">
+	<li><a href="index">主页</a></li>
+	<li class="active">文章列表</li>
+</ol>
+
+	<?php
+		foreach($lists as $list){
+			echo'
+				<div class="container">
+					<div class="list-group">
+						<a href="/article/detail" class="list-group-item">
+							<h4 class="list-group-item-heading">'.$list['title'].'</h4>
+							<p class="list-group-item-text">'.$list['content'].'</p>
+						</a>
+					</div>
+				</div>
+			';
+		}
+	?>
+
+<!-- 分页实现 -->
+<div class="center">
+	<ul class="nav nav-justified pagination pagination-lg">
+		<?php
+			if($curPage&&$curSize&&$maxNum){
+				$pageAmount = intval($maxNum/$curSize);
+				if ($maxNum%$curSize)
+				$pageAmount++;
+
+				if($curPage>1){
+					echo '<li><a href="/?page='.($curPage-1).'&size='.($curSize).'">&laquo;</a></li>';
+				}
+
+				for($i=1; $i<=$pageAmount; $i++){
+					if($curPage==$i)
+					echo '<li><a class="selected" href="/?page='.$i.'&size='.($curSize).'">'.$i.'</a></li>';
+					else
+					echo '<li><a href="/?page='.$i.'&size='.($curSize).'">'.$i.'</a></li>';
+				}
+
+				if($curPage<$pageAmount){
+					echo '<li><a href="/?page='.($curPage+1).'&size='.($curSize).'">&raquo;</a></li>';
+				}
+			}
+		?>
+	</ul>
+</div>
+
+
+<?php include APP_PATH."application/views/foot.html" ?>

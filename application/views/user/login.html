@@ -1,0 +1,144 @@
+<?php include APP_PATH."application/views/head.html" ?>
+<style type="text/css" media="">
+.js-badge{display:none;color:red;}
+.register{display: none}
+</style>
+
+<ol class="breadcrumb">
+    <li><a href="#">主页</a></li>
+    <li class="active">登陆</li>
+</ol>
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-4 col-xs-4"></div>
+			<div class="panel panel-info col-lg-4 col-xs-4">
+				<div class="panel-heading">
+					<label class="badge right js-badge" id="error">用户名或密码错</label>
+					<h3 class="panel-title login">登陆</h3>
+					<h3 class="panel-title register">注册</h3>
+				</div>
+				<div class="panel-body">
+					<form class="login" method="post" action="/user/login">
+						<div class="list-group">
+							<p class="list-group-item">
+								<input class="layui-input validation" type="text" id="username" name="username" placeholder="输入用户名" />
+							</p>
+							<p class="list-group-item">
+								<input class="layui-input validation" id="password" name="password" type="password" placeholder="输入密码" />
+							</p>
+							<p>
+								<input type="button" id="login" class="layui-btn layui-btn-normal" style="margin-top: 15px" value="登 陆" />
+								<input type="button" class="layui-btn layui-btn-primary right need_register" style="margin-top: 15px" value="还没有帐号？点击这里注册" />
+							</p>
+						</div>
+					</form>
+
+					<form class = "register" method="post" action="/user/register" >
+						<div class="list-group">
+							<p class="list-group-item">
+								<input class="layui-input validation" type="text" id="register_username" name="username" placeholder="输入用户名" style="width: 100%" />
+							</p>
+							<p class="list-group-item">
+								<input class="layui-input validation" id="register_password" name="password" type="password" placeholder="输入密码" style="width: 100%" />
+							</p>
+							<p class="list-group-item">
+								<input class="layui-input validation" id="register_repassword" name="repassword" type="password" placeholder="重新输入密码" style="width: 100%" />
+							</p>
+							<p>
+								<input type="button" id="register" class="layui-btn layui-btn-normal" style="margin-top: 15px" value="注 册" />
+								<input type="button" class="layui-btn layui-btn-primary right need_login" style="margin-top: 15px" value="已有帐号? 直接登录" />
+							</p>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+<?php include APP_PATH."application/views/foot.html" ?>
+<script type="text/javascript">
+	$(".need_register").on('click',function(){
+		$(".login").css('display','none');
+		$(".register").css('display','block');
+	})
+	$(".need_login").on('click',function(){
+		$(".login").css('display','block');
+		$(".register").css('display','none');
+	})
+
+	$("#register_username").on('blur',function(){
+		data = $(this).val();
+		if (data != '') {
+			$.ajax({url:"/user/validation",data:{username:data},type:"get",success:function(data){
+				data = $.parseJSON(data);
+				if (data.code > 0) {
+					$('#error').html(data.msg).css('display','block');
+					$('#login').addClass('layui-btn-disabled');
+					$('#register').addClass('layui-btn-disabled');
+				}
+			}});
+		}
+	})
+
+	$(".validation").on('blur',function(){
+		var data = $(this).val();
+		$('#login').addClass('layui-btn-disabled').attr('disabled',true);
+		$('#register').addClass('layui-btn-disabled').attr('disabled',true);
+		if ($(this).attr('name') == 'username') {
+			if (data == '') {$('#error').html("用户名不能为空").css('display','block'); $('#login').addClass('layui-btn-disabled'); $('#register').addClass('layui-btn-disabled'); return;}
+		}else if($(this).attr('name') == 'password'){
+			if (data == '') {$('#error').html("密码不能为空").css('display','block'); $('#login').addClass('layui-btn-disabled'); $('#register').addClass('layui-btn-disabled'); return;}
+		}else if($(this).attr('name') == 'repassword'){
+			if (data == '') {$('#error').html("两次密码输入不正确").css('display','block'); $('#login').addClass('layui-btn-disabled'); $('#register').addClass('layui-btn-disabled'); return;}
+		}
+		$('#login').removeClass('layui-btn-disabled').attr('disabled',false); 
+		$('#register').removeClass('layui-btn-disabled').attr('disabled',false); 
+		$('#error').html("").css('display','none');
+	})
+
+	$('#login').click(function(){
+		var username = $('#username').val();
+		var password = $('#password').val();
+		if (username == '' && password == '') {
+			$('#error').html('用户名或密码不能为空').css('display','block');
+			return false;
+		}
+		$.ajax({
+			url:'/user/login',
+			type:'POST',
+			data:{username:username,password:password},
+			success:function(msg){
+				msg_json = $.parseJSON(msg);
+				if(msg_json.code>0) {
+					$('#error').html(msg_json.msg).css('display','block');
+				}
+				else {
+					location.href="/article/index";
+				}
+			}
+		})
+	})
+
+	$('#register').click(function(){
+		var username = $('#register_username').val();
+		var password = $('#register_password').val();
+		var repassword = $('#register_repassword').val();
+		if (username == '' || password == '' || repassword == '') {
+			$('#error').html('用户名或密码不能为空').css('display','block');
+			return false;
+		}
+		$.ajax({
+			url:'/user/add',
+			type:'POST',
+			data:{username:username,password:password,repassword:repassword},
+			success:function(msg){
+				msg_json = $.parseJSON(msg);
+				if(msg_json.code>0) {
+					$('#error').html(msg_json.msg).css('display','block');
+				}
+				else {
+					location.href="/article/index";
+				}
+			}
+		})
+	})
+</script>

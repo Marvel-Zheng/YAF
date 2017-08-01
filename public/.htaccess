@@ -1,0 +1,5 @@
+SetEnv action_prefer 0
+
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule .* index.php

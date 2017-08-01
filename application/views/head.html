@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="/huayi.ico">
+
+    <title>弘亿文章分享网</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="/lib/bootstrap3/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/lib/layui/build/css/layui.css" rel="stylesheet">
+
+    <style type="text/css" media="">
+    #logo{
+        height: 45px;
+    }
+    .logo{background: #fff;display: inline-block;width: 100%;height:45px;}
+    .breadcrumb {
+        font-size:12px;
+    }
+    .panel {
+        padding-left:0px;
+        padding-right:0px;
+    }
+    .navbar-inverse {
+        background-color: #999;
+    }
+
+    /*下面是位置定义*/
+    .center {
+        width: auto;
+        display: table;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .right {
+        display: inline-block;
+        min-width: 10px;
+        line-height: 1;
+        vertical-align: baseline;
+        white-space: nowrap;
+        text-align: center;
+        float:right;
+    }
+    .text-center {
+        text-align: center;
+    }
+
+    /* 页面选择按钮样式 */
+.selected {
+	background-color: #eeeeee !important;
+	border-color: transparent;
+}
+.navbar-inverse{
+	margin-bottom: 0px;
+}
+    </style>
+  </head>
+
+  <body>
+
+    <!-- Static navbar -->
+    <div>
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-inverse-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="/index" class="logo"> 
+                <img id="logo" src="/images/title.png" />
+            </a>
+        </div>
+        <div class="navbar-collapse collapse navbar-inverse-collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                <?php $username =  Yaf_Session::getInstance()->get("username");
+                    if (isset($username)&& $username!="") {
+                ?>
+                <span style="display: inline-block;line-height: 45px;color: #fff">
+                	您好 <?php echo $username; ?>
+                </span>
+                <?php }else{ ?>
+                <a href="/user/login">登陆</a>
+                <?php } ?>
+                </li>
+                <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">个人账户<b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                    <li><a href="/user/logout">登出</a></li>
+                </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
