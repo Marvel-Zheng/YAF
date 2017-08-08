@@ -1,7 +1,7 @@
 base on Yaf3.06，集成ORM，性能卓越，易于扩展
-====
-PHPStudy nginx rewrite
 ==
+PHPStudy nginx rewrite
+=
 ```bash
 location ~ \.php {
 	fastcgi_pass 127.0.0.1:9000;
