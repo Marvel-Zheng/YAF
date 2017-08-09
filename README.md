@@ -1,6 +1,6 @@
-base on Yaf3.06，集成ORM，性能卓越，易于扩展
+Base on Yaf3.06，集成ORM，性能卓越，易于扩展
 =====
-phpStudy nginx rewrite(win7 php5.6)
+Nginx rewrite(win7 php5.6 phpStudy)
 =
 ```bash
 location ~ \.php {
@@ -17,7 +17,7 @@ if (!-e $request_filename) {
 }
 ```
 
-nginx rewrite(ubuntu16.04.1 php7.1)
+Nginx rewrite(ubuntu16.04.1 php7.1)
 =
 ```bash
 	location / {
